@@ -1,5 +1,16 @@
 <?php
-include_once 'koneksi.php'; 
+include_once 'koneksi.php';
+
+// Initialize variables
+$user_id = null;
+$is_logged_in = false;
+
+// Check if user is logged in
+session_start();
+if (isset($_SESSION['user_id'])) {
+     $user_id = $_SESSION['user_id'];
+     $is_logged_in = true;
+}
 
 // Fetch summary data
 $totalCampuses = $conn->query("SELECT COUNT(*) as count FROM kampus")->fetch_assoc()['count'];
@@ -59,14 +70,18 @@ $conn->close();
                          <span class="font-bold text-xl">CampusPark</span>
                     </div>
                     <div class="hidden md:flex space-x-6">
-                         <a href="#" class="hover:text-blue-200">Home</a>
-                         <a href="#" class="hover:text-blue-200">Parking Areas</a>
-                         <a href="#" class="hover:text-blue-200">Vehicles</a>
-                         <a href="#" class="hover:text-blue-200">Transactions</a>
-                         <a href="#" class="hover:text-blue-200">About</a>
+                         <a href="index.php" class="hover:text-blue-200">Home</a>
+                         <a href="find-parking.php" class="hover:text-blue-200">Find Parking</a>
+                         <a href="reserve-parking.php" class="hover:text-blue-200">Reserve</a>
+                         <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
+                         <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
                     </div>
                     <div>
-                         <a href="#" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
+                         <?php if ($is_logged_in): ?>
+                              <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
+                         <?php else: ?>
+                              <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
+                         <?php endif; ?>
                     </div>
                </div>
           </div>
@@ -80,7 +95,7 @@ $conn->close();
                          <h1 class="text-4xl font-bold leading-tight mb-4">Smart Campus Parking Management</h1>
                          <p class="text-xl mb-6">Easily find, reserve, and manage parking spaces across all campus locations.</p>
                          <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                              <a href="#" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-6 rounded-lg text-center">Find Parking</a>
+                              <a href="cari-parkir.php" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-6 rounded-lg text-center">Find Parking</a>
                               <a href="#" class="border border-white hover:bg-blue-700 font-bold py-3 px-6 rounded-lg text-center">Register Vehicle</a>
                          </div>
                     </div>
@@ -175,7 +190,7 @@ $conn->close();
                                                   </div>
                                              </td>
                                              <td class="py-3 px-4 text-center">
-                                                  <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-lg text-sm">Reserve</a>
+                                                  <a href="reserve-parking.php" class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-lg text-sm">Reserve</a>
                                              </td>
                                         </tr>
                                    <?php endwhile; ?>
