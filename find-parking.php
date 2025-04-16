@@ -1,6 +1,6 @@
 <?php
 // Database connection
-include_once 'koneksi.php'; 
+include_once 'koneksi.php';
 
 // initialize variables
 $user_id = null;
@@ -9,8 +9,8 @@ $is_logged_in = false;
 // Check if user is logged in
 session_start();
 if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    $is_logged_in = true;
+     $user_id = $_SESSION['user_id'];
+     $is_logged_in = true;
 }
 
 // Get all campuses
@@ -119,6 +119,21 @@ $searchPerformed = isset($_GET['campus']) || isset($_GET['keyword']);
                               </button>
                          </div>
                     </form>
+               </div>
+          </div>
+     </section>
+
+     <!-- Map View (Placeholder) -->
+     <section class="py-6">
+          <div class="container mx-auto px-4">
+               <div class="bg-white rounded-lg shadow-md p-4 mb-8">
+                    <div class="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                         <div class="text-center">
+                              <i class="fas fa-map-marked-alt text-4xl text-gray-500 mb-2"></i>
+                              <p class="text-gray-600">Interactive campus map would be displayed here.</p>
+                              <p class="text-gray-500 text-sm">Map shows parking locations and real-time availability</p>
+                         </div>
+                    </div>
                </div>
           </div>
      </section>
