@@ -95,8 +95,8 @@ $conn->close();
                          <h1 class="text-4xl font-bold leading-tight mb-4">Smart Campus Parking Management</h1>
                          <p class="text-xl mb-6">Easily find, reserve, and manage parking spaces across all campus locations.</p>
                          <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                              <a href="cari-parkir.php" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-6 rounded-lg text-center">Find Parking</a>
-                              <a href="#" class="border border-white hover:bg-blue-700 font-bold py-3 px-6 rounded-lg text-center">Register Vehicle</a>
+                              <a href="find-parking.php" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-6 rounded-lg text-center">Find Parking</a>
+                              <a href="register-vehicle.php" class="border border-white hover:bg-blue-700 font-bold py-3 px-6 rounded-lg text-center">Register Vehicle</a>
                          </div>
                     </div>
                     <div class="md:w-1/2 flex justify-center">
