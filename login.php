@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $error_message = "Please enter both email and password.";
      } else {
           // Prepare SQL query to check user credentials
-          $query = "SELECT id, nama, email, password FROM users WHERE email = ?";
+          $query = "SELECT id, nama, email, role, password FROM users WHERE email = ?";
           $stmt = $conn->prepare($query);
           $stmt->bind_param("s", $email);
           $stmt->execute();
@@ -41,10 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['nama'];
                     $_SESSION['user_email'] = $user['email'];
+                    $_SESSION['user_role'] = $user['role'];
 
                     // Redirect to my vehicles page
-                    header("Location: my-vehicles.php");
-                    exit;
+                    if ($_SESSION['user_role'] == 'admin') {
+                         header("Location: dash/dashboard.php");
+                         exit;
+                    } else {
+                         header("Location: my-vehicles.php");
+                         exit;
+                    }
                } else {
                     // For plain text passwords (not recommended for production)
                     // If using plain text passwords for development only
