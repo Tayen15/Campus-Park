@@ -22,6 +22,34 @@ class Auth
           return isset($_SESSION['user_id']);
      }
 
+     public function register($name, $email, $password, $role = 'user')
+     {
+          if (!in_array($role, ['admin', 'user'])) {
+               $this->error_message = 'Invalid role. Must be "admin" or "user".';
+               return false;  
+          }
+
+          $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+          $sql = "INSERT INTO users (nama, email, password, role) VALUES (?, ?, ?, ?)";
+          $stmt = $this->conn->prepare($sql);
+
+          if (!$stmt) {
+               $this->error_message = 'Database error: Failed to prepare statement.';
+               return false;
+          }
+
+          $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
+          $success = $stmt->execute();
+          $stmt->close();
+
+          if (!$success) {
+               $this->error_message = 'Failed to register user.';
+          }
+
+          return $success;
+     }
+
      // Proses login
      public function login($email, $password)
      {
@@ -70,10 +98,14 @@ class Auth
      // Mendapatkan halaman redirect berdasarkan role
      public function getRedirectPage()
      {
-          if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
-               return 'dash/dashboard.php';
+          if (isset($_SESSION['user_role'])) {
+               if ($_SESSION['user_role'] === 'admin') {
+                    return 'dash/dashboard.php';
+               } else {
+                    return 'my-vehicles.php'; // Halaman default untuk user
+               }
           }
-          return 'my-vehicles.php';
+          return 'index.php';
      }
 
      // Proses logout
