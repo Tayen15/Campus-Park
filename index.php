@@ -100,7 +100,7 @@ $conn->close();
                          </div>
                     </div>
                     <div class="md:w-1/2 flex justify-center">
-                         <img src="/api/placeholder/500/320" alt="Campus Parking" class="rounded-lg shadow-xl">
+                         <img src="/images/parkiran.JPG" alt="Campus Parking" class="rounded-lg shadow-xl">
                     </div>
                </div>
           </div>

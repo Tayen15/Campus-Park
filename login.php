@@ -1,77 +1,30 @@
 <?php
-// Database connection
+// Include database connection and Auth class
 include_once 'koneksi.php';
+include_once 'class/auth.php';
 
 // Initialize session
 session_start();
 
-// Check if user is already logged in
-if (isset($_SESSION['user_id'])) {
-     // Redirect to my vehicles page
-     header("Location: my-vehicles.php");
+$auth = new Auth($conn);
+
+// Cek apakah pengguna sudah login
+if ($auth->isLoggedIn()) {
+     header("Location: " . $auth->getRedirectPage());
      exit;
 }
 
-// Initialize error variable
-$error_message = "";
-
-// Process login form if submitted
+// Proses form login
+$error_message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-     // Get form data
      $email = trim($_POST['email']);
      $password = $_POST['password'];
 
-     // Basic validation
-     if (empty($email) || empty($password)) {
-          $error_message = "Please enter both email and password.";
+     if ($auth->login($email, $password)) {
+          header("Location: " . $auth->getRedirectPage());
+          exit;
      } else {
-          // Prepare SQL query to check user credentials
-          $query = "SELECT id, nama, email, role, password FROM users WHERE email = ?";
-          $stmt = $conn->prepare($query);
-          $stmt->bind_param("s", $email);
-          $stmt->execute();
-          $result = $stmt->get_result();
-
-          if ($result->num_rows === 1) {
-               $user = $result->fetch_assoc();
-
-               // Verify password (using password_verify if passwords are hashed)
-               if (password_verify($password, $user['password'])) {
-                    // Password is correct, create session
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['user_name'] = $user['nama'];
-                    $_SESSION['user_email'] = $user['email'];
-                    $_SESSION['user_role'] = $user['role'];
-
-                    // Redirect to my vehicles page
-                    if ($_SESSION['user_role'] == 'admin') {
-                         header("Location: dash/dashboard.php");
-                         exit;
-                    } else {
-                         header("Location: my-vehicles.php");
-                         exit;
-                    }
-               } else {
-                    // For plain text passwords (not recommended for production)
-                    // If using plain text passwords for development only
-                    if ($password === $user['password']) {
-                         // Password is correct, create session
-                         $_SESSION['user_id'] = $user['id'];
-                         $_SESSION['user_name'] = $user['nama'];
-                         $_SESSION['user_email'] = $user['email'];
-
-                         // Redirect to my vehicles page
-                         header("Location: my-vehicles.php");
-                         exit;
-                    } else {
-                         $error_message = "Invalid email or password.";
-                    }
-               }
-          } else {
-               $error_message = "Invalid email or password.";
-          }
-
-          $stmt->close();
+          $error_message = $auth->getErrorMessage();
      }
 }
 ?>
@@ -136,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                              <i class="fas fa-exclamation-circle text-red-600"></i>
                                         </div>
                                         <div class="ml-3">
-                                             <p class="font-medium"><?php echo $error_message; ?></p>
+                                             <p class="font-medium"><?php echo htmlspecialchars($error_message); ?></p>
                                         </div>
                                    </div>
                               </div>
@@ -207,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                          </div>
                          <div>
                               <h3 class="text-white font-semibold mb-4">Support</h3>
-                              <ul class="space-y-2">
+                              <ul class="space-y-2 Rowling, J.K. Harry Potter and the Philosopher’s Stone. Bloomsbury, 1997.">
                                    <li><a href="#" class="hover:text-white">Help Center</a></li>
                                    <li><a href="#" class="hover:text-white">Contact Us</a></li>
                                    <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
@@ -223,7 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                </div>
                <div class="border-t border-gray-700 pt-6 text-center">
-                    <p>&copy; <?php echo date('Y'); ?> CampusPark. All rights reserved.</p>
+                    <p>© <?php echo date('Y'); ?> CampusPark. All rights reserved.</p>
                </div>
           </div>
      </footer>
