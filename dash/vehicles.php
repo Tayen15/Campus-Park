@@ -41,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           if (empty($errors)) {
                if ($action === 'create') {
-                    if ($vehicle->create($nopol, $merk, $pemilik, $jenis_kendaraan_id)) {
+                    if ($vehicle->create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'])) {
                          $success = 'Vehicle added successfully.';
                     } else {
                          $errors[] = 'Failed to add vehicle.';
                     }
                } elseif ($action === 'update' && $id > 0) {
-                    if ($vehicle->update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id)) {
+                    if ($vehicle->update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'])) {
                          $success = 'Vehicle updated successfully.';
                     } else {
                          $errors[] = 'Failed to update vehicle.';
