@@ -29,12 +29,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $action = $_POST['action'] ?? '';
           $nopol = trim($_POST['nopol'] ?? '');
           $merk = trim($_POST['merk'] ?? '');
+          $tahun_beli = trim($_POST['tahun_beli'] ?? '');
           $pemilik = trim($_POST['pemilik'] ?? '');
           $jenis_kendaraan_id = (int)($_POST['jenis_kendaraan_id'] ?? 0);
           $id = (int)($_POST['id'] ?? 0);
 
           if ($action === 'create' || $action === 'update') {
-               if (empty($nopol) || empty($merk) || empty($pemilik) || $jenis_kendaraan_id <= 0) {
+               if (empty($nopol) || empty($merk) || empty($pemilik) || $jenis_kendaraan_id <= 0 || empty($tahun_beli)) {
                     $errors[] = 'All fields are required.';
                }
           }
@@ -263,8 +264,12 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                          <input type="text" name="pemilik" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div class="mb-4">
+                         <label class="block text-sm font-medium text-gray-700">Purchase Year</label>
+                         <input type="number" name="thn_beli" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1900" max="<?php echo date('Y'); ?>" value="<?php echo date('Y'); ?>">
+                    </div>
+                    <div class="mb-4">
                          <label class="block text-sm font-medium text-gray-700">Vehicle Type</label>
-                         <select name="jenis_kendaraan_id" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                         <select name="jenis_kendaraan_id" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >
                               <option value="">Select Type</option>
                               <?php foreach ($vehicle_types as $type): ?>
                                    <option value="<?php echo $type['id']; ?>"><?php echo htmlspecialchars($type['nama']); ?></option>
