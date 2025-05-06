@@ -53,23 +53,23 @@ class Vehicle
      }
 
      // Membuat kendaraan baru
-     public function create($merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_kendaraan_id, $user_id)
+     public function create($merk, $pemilik, $nopol, $thn_beli, $jenis_kendaraan_id, $user_id)
      {
-          $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, deskripsi, jenis_kendaraan_id, user_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+          $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, jenis_kendaraan_id, user_id) 
+                VALUES (?, ?, ?, ?, ?, ?)";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sssisii", $merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_kendaraan_id, $user_id);
+          $stmt->bind_param("sssiii", $merk, $pemilik, $nopol, $thn_beli, $jenis_kendaraan_id, $user_id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
      }
 
      // Memperbarui kendaraan
-     public function update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id)
+     public function update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $thn_beli)
      {
-          $sql = "UPDATE kendaraan SET nopol = ?, merk = ?, pemilik = ?, jenis_kendaraan_id = ? WHERE id = ?";
+          $sql = "UPDATE kendaraan SET nopol = ?, merk = ?, pemilik = ?, jenis_kendaraan_id = ?, thn_beli = ? WHERE id = ?";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sssii", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $id);
+          $stmt->bind_param("sssiii", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $thn_beli, $id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
