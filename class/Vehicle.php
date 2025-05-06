@@ -65,11 +65,11 @@ class Vehicle
      }
 
      // Memperbarui kendaraan
-     public function update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $thn_beli)
+     public function update($id, $nopol, $merk, $jenis_kendaraan_id, $thn_beli, $deskripsi)
      {
-          $sql = "UPDATE kendaraan SET nopol = ?, merk = ?, pemilik = ?, jenis_kendaraan_id = ?, thn_beli = ? WHERE id = ?";
+          $sql = "UPDATE kendaraan SET nopol = ?, merk = ?, jenis_kendaraan_id = ?, thn_beli = ?, deskripsi = ? WHERE id = ?";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sssiii", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $thn_beli, $id);
+          $stmt->bind_param("ssiisi", $nopol, $merk, $jenis_kendaraan_id, $thn_beli, $deskripsi, $id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;

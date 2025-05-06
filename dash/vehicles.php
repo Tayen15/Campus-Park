@@ -27,17 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $errors[] = 'Invalid CSRF token.';
      } else {
           $action = $_POST['action'] ?? '';
-          $nopol = trim($_POST['nopol'] ?? '');
-          $merk = trim($_POST['merk'] ?? '');
+          $nopol = $_POST['nopol'] ?? '';
+          $merk = $_POST['merk'] ?? '';
           $thn_beli = intval($_POST['thn_beli'] ?? '');
-          $pemilik = trim($_POST['pemilik'] ?? '');
+          $pemilik = $_POST['pemilik'] ?? '';
           $jenis_kendaraan_id = (int)($_POST['jenis_kendaraan_id'] ?? 0);
           $deskripsi = $_POST['deskripsi'] ?? '';
           $id = (int)($_POST['id'] ?? 0);
 
-          if ($action === 'create' || $action === 'update') {
+          if ($action === 'create') {
                if (empty($nopol) || empty($merk) || empty($pemilik) || $jenis_kendaraan_id <= 0 || empty($thn_beli)) {
                     $errors[] = 'All fields are required.';
+               }
+          } elseif ($action === 'update') {
+               if (empty($nopol) || empty($merk) || $jenis_kendaraan_id <= 0 || empty($thn_beli)) {
+                    $errors[] = 'All fields except owner are required.';
                }
           }
 
@@ -50,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                          $errors[] = 'Failed to add vehicle.';
                     }
                } elseif ($action === 'update' && $id > 0) {
-                    if ($vehicle->update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $thn_beli, $_SESSION['user_id'])) {
+                    if ($vehicle->update($id, $nopol, $merk, $jenis_kendaraan_id, $thn_beli, $_SESSION['user_id'], $deskripsi)) {
                          $success = 'Vehicle updated successfully.';
                     } else {
                          $errors[] = 'Failed to update vehicle.';
@@ -171,6 +175,12 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                          <div class="bg-green-100 border border-green-200 text-green-800 rounded-lg p-4 mb-6">
                               <p class="font-medium"><?php echo htmlspecialchars($success); ?></p>
                          </div>
+                         <script>
+                              document.addEventListener('DOMContentLoaded', function () {
+                                   closeModal('addVehicleModal');
+                                   closeModal('editVehicleModal');
+                              });
+                         </script>
                     <?php endif; ?>
                     <?php if (!empty($errors)): ?>
                          <div class="bg-red-100 border border-red-200 text-red-800 rounded-lg p-4 mb-6">
@@ -271,7 +281,7 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                     </div>
                     <div class="mb-4">
                          <label class="block text-sm font-medium text-gray-700">Vehicle Type</label>
-                         <select name="jenis_kendaraan_id" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" >
+                         <select name="jenis_kendaraan_id" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                               <option value="">Select Type</option>
                               <?php foreach ($vehicle_types as $type): ?>
                                    <option value="<?php echo $type['id']; ?>"><?php echo htmlspecialchars($type['nama']); ?></option>
@@ -310,7 +320,7 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                          </div>
                          <div class="mb-4">
                               <label class="block text-sm font-medium text-gray-700">Owner</label>
-                              <input type="text" name="pemilik" value="<?php echo htmlspecialchars($edit_vehicle['pemilik']); ?>" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                              <input type="text" disabled value="<?php echo htmlspecialchars($edit_vehicle['pemilik']); ?>" class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed">
                          </div>
                          <div class="mb-4">
                               <label class="block text-sm font-medium text-gray-700">Purchase Year</label>

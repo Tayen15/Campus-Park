@@ -234,9 +234,6 @@ if (isset($_SESSION['user_id'])) {
                                                        <td class="py-4 px-4 whitespace-nowrap"><?php echo htmlspecialchars($vehicle['jenis_nama']); ?></td>
                                                        <td class="py-4 px-4 whitespace-nowrap"><?php echo htmlspecialchars($vehicle['thn_beli']); ?></td>
                                                        <td class="py-4 px-4 whitespace-nowrap space-x-2">
-                                                            <a href="edit-vehicle.php?id=<?php echo $vehicle['id']; ?>" class="text-blue-600 hover:text-blue-900">
-                                                                 <i class="fas fa-edit"></i> Edit
-                                                            </a>
                                                             <a href="#" class="text-red-600 hover:text-red-900" onclick="confirmDelete(<?php echo $vehicle['id']; ?>, '<?php echo htmlspecialchars($vehicle['nopol']); ?>')">
                                                                  <i class="fas fa-trash"></i> Delete
                                                             </a>
