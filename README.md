@@ -1,7 +1,7 @@
 # 🚀 Proud to Present Our Final Project: Campus Parking Management System!
 
 Hi, LinkedIn network! 👋  
-I’m excited to share the culmination of our collaborative efforts in building our final project: **Campus Parking Management System** – a modern and efficient web-based solution to improve parking management in university areas.
+I’m excited to share the culmination of our collaborative efforts in building our project: **Campus Parking Management System** – a modern and efficient web-based solution to improve parking management in university areas.
 
 This project was a fantastic journey that combined technical skills, problem-solving, and teamwork — and I’m incredibly grateful to be part of this team:
 
