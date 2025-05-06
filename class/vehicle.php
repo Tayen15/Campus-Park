@@ -53,7 +53,7 @@ class Vehicle
      }
 
      // Membuat kendaraan baru
-     public function create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id, $thn_beli = 2025)
+     public function create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id, $thn_beli)
      {
           $sql = "INSERT INTO kendaraan (nopol, merk, pemilik, jenis_kendaraan_id, user_id, thn_beli) VALUES (?, ?, ?, ?, ?, ?)";
           $stmt = $this->conn->prepare($sql);
