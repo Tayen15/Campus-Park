@@ -61,13 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                          <a href="reserve-parking.php" class="hover:text-blue-200">Reserve</a>
                          <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
                          <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
-                         <div>
-                              <?php if ($is_logged_in): ?>
-                                   <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
-                              <?php else: ?>
-                                   <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
-                              <?php endif; ?>
-                         </div>
                     </div>
                </div>
                <!-- Mobile Menu -->
@@ -77,13 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a href="reserve-parking.php" class=" hovered:text-blue-200">Reserve</a>
                     <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
                     <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
-                    <div>
-                         <?php if ($is_logged_in): ?>
-                              <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
-                         <?php else: ?>
-                              <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
-                         <?php endif; ?>
-                    </div>
                </div>
           </div>
      </nav>
