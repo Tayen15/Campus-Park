@@ -1,7 +1,7 @@
 <?php
 // Include database connection and Auth class
 include_once 'koneksi.php';
-include_once 'class/auth.php';
+include_once 'class/Auth.php';
 
 // Initialize session
 session_start();
