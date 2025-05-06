@@ -57,7 +57,7 @@ class Vehicle
      {
           $sql = "INSERT INTO kendaraan (nopol, merk, pemilik, jenis_kendaraan_id, user_id) VALUES (?, ?, ?, ?, ?)";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sssi", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id);
+          $stmt->bind_param("sssii", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
