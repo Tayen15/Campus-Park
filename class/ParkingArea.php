@@ -31,7 +31,7 @@ class ParkingArea
      // Mendapatkan area parkir berdasarkan ID
      public function getParkingAreaById($id)
      {
-          $sql = "SELECT a.id, a.nama, a.kapasitas, a.kampus_id, k.nama as kampus_nama
+          $sql = "SELECT a.id, a.nama, a.kapasitas, a.keterangan, a.kampus_id, k.nama as kampus_nama
                 FROM area_parkir a
                 JOIN kampus k ON a.kampus_id = k.id
                 WHERE a.id = ?";
@@ -53,22 +53,22 @@ class ParkingArea
      }
 
      // Membuat area parkir baru
-     public function create($nama, $kapasitas, $kampus_id)
+     public function create($nama, $kapasitas, $kampus_id, $keterangan)
      {
-          $sql = "INSERT INTO area_parkir (nama, kapasitas, kampus_id) VALUES (?, ?, ?)";
+          $sql = "INSERT INTO area_parkir (nama, kapasitas, kampus_id, keterangan) VALUES (?, ?, ?, ?)";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sii", $nama, $kapasitas, $kampus_id);
+          $stmt->bind_param("siis", $nama, $kapasitas, $kampus_id, $keterangan);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
      }
 
      // Memperbarui area parkir
-     public function update($id, $nama, $kapasitas, $kampus_id)
+     public function update($id, $nama, $kapasitas, $kampus_id, $keterangan)
      {
-          $sql = "UPDATE area_parkir SET nama = ?, kapasitas = ?, kampus_id = ? WHERE id = ?";
+          $sql = "UPDATE area_parkir SET nama = ?, kapasitas = ?, kampus_id = ?, keterangan = ? WHERE id = ?";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("siii", $nama, $kapasitas, $kampus_id, $id);
+          $stmt->bind_param("siisi", $nama, $kapasitas, $kampus_id, $keterangan, $id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
