@@ -175,6 +175,12 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                          <div class="bg-green-100 border border-green-200 text-green-800 rounded-lg p-4 mb-6">
                               <p class="font-medium"><?php echo htmlspecialchars($success); ?></p>
                          </div>
+                         <script>
+                              document.addEventListener('DOMContentLoaded', function () {
+                                   closeModal('addTransactionModal');
+                                   closeModal('editTransactionModal');
+                              });
+                         </script>
                     <?php endif; ?>
                     <?php if (!empty($errors)): ?>
                          <div class="bg-red-100 border border-red-200 text-red-800 rounded-lg p-4 mb-6">
