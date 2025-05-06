@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      $thn_beli = intval($_POST['thn_beli']);
      $deskripsi = $_POST['deskripsi'];
      $jenis_id = intval($_POST['jenis_id']);
+     $user_id = $_SESSION['user_id'];
 
      // Validate data
      $valid = true;
@@ -54,11 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
      // If valid, insert into database
      if ($valid) {
-          $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, deskripsi, jenis_kendaraan_id) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+          $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, deskripsi, jenis_kendaraan_id, user_id) 
+                VALUES (?, ?, ?, ?, ?, ?, )";
 
           $stmt = $conn->prepare($sql);
-          $stmt->bind_param("sssisi", $merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_id);
+          $stmt->bind_param("sssisii", $merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_id, $user_id);
 
           if ($stmt->execute()) {
                $success_message = "Vehicle successfully registered!";
