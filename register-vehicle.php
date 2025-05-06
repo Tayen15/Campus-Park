@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      // Validate data
      $valid = true;
 
-     if (empty($merk) || empty($pemilik) || empty($nopol) || $thn_beli <= 0 || $jenis_id <= 0) {
+     if (empty($merk) || empty($pemilik) || empty($nopol) || $thn_beli <= 0 || $jenis_id <= 0 || empty($user_id)) {
           $valid = false;
           $error_message = "All required fields must be filled in correctly.";
      }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      // If valid, insert into database
      if ($valid) {
           $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, deskripsi, jenis_kendaraan_id, user_id) 
-                VALUES (?, ?, ?, ?, ?, ?, )";
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
 
           $stmt = $conn->prepare($sql);
           $stmt->bind_param("sssisii", $merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_id, $user_id);
