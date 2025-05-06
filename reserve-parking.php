@@ -2,7 +2,7 @@
 // Database connection
 include_once 'koneksi.php';
 
-// initialize variables
+// Initialize variables
 $user_id = null;
 $is_logged_in = false;
 
@@ -20,14 +20,23 @@ $area = null;
 // Get all campuses for the dropdown
 $campuses = $conn->query("SELECT * FROM kampus ORDER BY nama");
 
-// Get user's vehicles (in a real system, this would be filtered by user ID)
-$vehicles = $conn->query("SELECT * FROM kendaraan ORDER BY merk, nopol");
+// Get user's vehicles filtered by user ID with type and fee
+$vehicles_query = "SELECT k.*, j.nama AS jenis_nama, j.fee AS jenis_fee 
+                  FROM kendaraan k 
+                  JOIN jenis j ON k.jenis_kendaraan_id = j.id 
+                  WHERE k.user_id = ? 
+                  ORDER BY k.merk, k.nopol";
+$stmt = $conn->prepare($vehicles_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$vehicles = $stmt->get_result();
+$stmt->close();
 
 // Handle form submission
 $success_message = null;
 $error_message = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_logged_in) {
      // Process the reservation
      $selected_area = intval($_POST['area_id']);
      $selected_vehicle = intval($_POST['vehicle_id']);
@@ -36,28 +45,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
      $end_time = $_POST['end_time'];
      $notes = $_POST['notes'];
 
-     // Calculate fee - this would be based on your business logic
-     // For example, hourly rate * duration
-     $start = strtotime($start_time);
-     $end = strtotime($end_time);
-     $duration_hours = ($end - $start) / 3600;
-     $hourly_rate = 5000; // Example rate in IDR
-     $fee = $duration_hours * $hourly_rate;
-
-     // Insert reservation into database
-     $sql = "INSERT INTO transaksi (tanggal, mulai, akhir, keterangan, biaya, kendaraan_id, area_parkir_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-     $stmt = $conn->prepare($sql);
-     $stmt->bind_param("ssssdii", $reservation_date, $start_time, $end_time, $notes, $fee, $selected_vehicle, $selected_area);
-
-     if ($stmt->execute()) {
-          $success_message = "Parking reservation successful! Your reservation ID is: " . $stmt->insert_id;
-     } else {
-          $error_message = "Error making reservation: " . $stmt->error;
-     }
-
+     // Get the fee for the selected vehicle type
+     $stmt = $conn->prepare("
+        SELECT j.fee 
+        FROM kendaraan k 
+        JOIN jenis j ON k.jenis_kendaraan_id = j.id 
+        WHERE k.id = ? AND k.user_id = ?
+    ");
+     $stmt->bind_param("ii", $selected_vehicle, $user_id);
+     $stmt->execute();
+     $result = $stmt->get_result();
+     $vehicle_type = $result->fetch_assoc();
      $stmt->close();
+
+     if ($vehicle_type) {
+          // Calculate fee based on duration and vehicle type fee
+          $start = strtotime($start_time);
+          $end = strtotime($end_time);
+          $duration_hours = ($end - $start) / 3600;
+          if ($duration_hours < 0) {
+               $duration_hours += 24; // Handle cases where end time is past midnight
+          }
+          $hourly_rate = $vehicle_type['fee']; // Fee per hour from jenis table
+          $fee = ceil($duration_hours) * $hourly_rate; // Round up to the nearest hour
+
+          // Insert reservation into database
+          $sql = "INSERT INTO transaksi (tanggal, mulai, akhir, keterangan, biaya, kendaraan_id, area_parkir_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("ssssdii", $reservation_date, $start_time, $end_time, $notes, $fee, $selected_vehicle, $selected_area);
+
+          if ($stmt->execute()) {
+               $success_message = "Parking reservation successful! Your reservation ID is: " . $stmt->insert_id . ". Total fee: Rp " . number_format($fee, 0, ',', '.');
+          } else {
+               $error_message = "Error making reservation: " . $stmt->error;
+          }
+
+          $stmt->close();
+     } else {
+          $error_message = "Invalid vehicle selected.";
+     }
 }
 
 // If area ID is provided, get area details
@@ -116,15 +144,35 @@ $parking_areas = $conn->query("
                <div class="flex items-center justify-between py-4">
                     <div class="flex items-center">
                          <i class="fas fa-parking text-3xl mr-3"></i>
-                         <a href="index.php" class="font-bold text-xl">CampusPark</a>
+                         <span class="font-bold text-xl">CampusPark</span>
                     </div>
+                    <!-- Hamburger Menu Button for Mobile -->
+                    <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                         <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                    <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
                          <a href="index.php" class="hover:text-blue-200">Home</a>
                          <a href="find-parking.php" class="hover:text-blue-200">Find Parking</a>
-                         <a href="reserve-parking.php" class="border-b-2 hover:text-blue-200">Reserve</a>
+                         <a href="reserve-parking.php" class="border-b-2 border-white hover:text-blue-200">Reserve</a>
                          <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
-                         <a href="my-vehicles.php" class="border-white hover:text-blue-200">My Vehicles</a>
+                         <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
+                         <div>
+                              <?php if ($is_logged_in): ?>
+                                   <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
+                              <?php else: ?>
+                                   <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
+                              <?php endif; ?>
+                         </div>
                     </div>
+               </div>
+               <!-- Mobile Menu -->
+               <div id="mobile-menu" class="md:hidden hidden flex-col space-y-4 pb-4">
+                    <a href="index.php" class="hover:text-blue-200">Home</a>
+                    <a href="find-parking.php" class="hover:text-blue-200">Find Parking</a>
+                    <a href="reserve-parking.php" class=" hovered:text-blue-200">Reserve</a>
+                    <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
+                    <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
                     <div>
                          <?php if ($is_logged_in): ?>
                               <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
@@ -182,84 +230,102 @@ $parking_areas = $conn->query("
 
                <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="md:flex">
-                         <!-- Left side - form -->
+                         <!-- Left side - form or login message -->
                          <div class="md:w-2/3 p-6">
                               <h2 class="text-2xl font-bold mb-6">Reservation Details</h2>
 
-                              <form action="reserve-parking.php" method="POST">
-                                   <!-- Area selection -->
-                                   <div class="mb-4">
-                                        <label for="area_id" class="block text-sm font-medium text-gray-700 mb-1">Parking Area</label>
-                                        <select name="area_id" id="area_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                                             <option value="">-- Select Parking Area --</option>
-                                             <?php if ($parking_areas && $parking_areas->num_rows > 0): ?>
-                                                  <?php while ($parking_area = $parking_areas->fetch_assoc()): ?>
-                                                       <option value="<?php echo $parking_area['id']; ?>" <?php echo ($area && $area['id'] == $parking_area['id']) ? 'selected' : ''; ?>>
-                                                            <?php echo $parking_area['nama']; ?> (<?php echo $parking_area['kampus_nama']; ?>)
-                                                       </option>
-                                                  <?php endwhile; ?>
-                                             <?php endif; ?>
-                                        </select>
+                              <?php if (!$is_logged_in): ?>
+                                   <!-- Show login message for guests -->
+                                   <div class="p-8 text-center">
+                                        <i class="fas fa-user-lock text-5xl text-gray-300 mb-4"></i>
+                                        <h3 class="text-xl font-bold mb-2">Login Required</h3>
+                                        <p class="text-gray-600 mb-6">Please login to view and manage your vehicles.</p>
+                                        <a href="login.php" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">
+                                             Login Now
+                                        </a>
                                    </div>
-
-                                   <!-- Vehicle selection -->
-                                   <div class="mb-4">
-                                        <label for="vehicle_id" class="block text-sm font-medium text-gray-700 mb-1">Vehicle</label>
-                                        <select name="vehicle_id" id="vehicle_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                                             <option value="">-- Select Vehicle --</option>
-                                             <?php if ($vehicles && $vehicles->num_rows > 0): ?>
-                                                  <?php while ($vehicle = $vehicles->fetch_assoc()): ?>
-                                                       <option value="<?php echo $vehicle['id']; ?>">
-                                                            <?php echo $vehicle['nopol']; ?> - <?php echo $vehicle['merk']; ?>
-                                                       </option>
-                                                  <?php endwhile; ?>
-                                             <?php endif; ?>
-                                        </select>
-                                        <div class="mt-1 text-sm text-gray-500">
-                                             Don't see your vehicle? <a href="register-vehicle.php" class="text-blue-600 hover:underline">Register a new vehicle</a>
+                              <?php else: ?>
+                                   <form action="reserve-parking.php" method="POST">
+                                        <!-- Area selection -->
+                                        <div class="mb-4">
+                                             <label for="area_id" class="block text-sm font-medium text-gray-700 mb-1">Parking Area</label>
+                                             <select name="area_id" id="area_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                                                  <option value="">-- Select Parking Area --</option>
+                                                  <?php if ($parking_areas && $parking_areas->num_rows > 0): ?>
+                                                       <?php while ($parking_area = $parking_areas->fetch_assoc()): ?>
+                                                            <option value="<?php echo $parking_area['id']; ?>" <?php echo ($area && $area['id'] == $parking_area['id']) ? 'selected' : ''; ?>>
+                                                                 <?php echo htmlspecialchars($parking_area['nama']); ?> (<?php echo htmlspecialchars($parking_area['kampus_nama']); ?>)
+                                                            </option>
+                                                       <?php endwhile; ?>
+                                                  <?php endif; ?>
+                                             </select>
                                         </div>
-                                   </div>
 
-                                   <!-- Date and time selection -->
-                                   <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <!-- Vehicle selection -->
+                                        <div class="mb-4">
+                                             <label for="vehicle_id" class="block text-sm font-medium text-gray-700 mb-1">Vehicle</label>
+                                             <select name="vehicle_id" id="vehicle_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                                                  <option value="">-- Select Vehicle --</option>
+                                                  <?php if ($vehicles && $vehicles->num_rows > 0): ?>
+                                                       <?php while ($vehicle = $vehicles->fetch_assoc()): ?>
+                                                            <option value="<?php echo $vehicle['id']; ?>" data-fee="<?php echo $vehicle['jenis_fee']; ?>">
+                                                                 <?php echo htmlspecialchars($vehicle['nopol']); ?> - <?php echo htmlspecialchars($vehicle['merk']); ?> (<?php echo htmlspecialchars($vehicle['jenis_nama']); ?>)
+                                                            </option>
+                                                       <?php endwhile; ?>
+                                                  <?php endif; ?>
+                                             </select>
+                                             <div class="mt-1 text-sm text-gray-500">
+                                                  Don't see your vehicle? <a href="register-vehicle.php" class="text-blue-600 hover:underline">Register a new vehicle</a>
+                                             </div>
+                                        </div>
+
+                                        <!-- Date and time selection -->
+                                        <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                             <div>
+                                                  <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                                  <input type="date" name="date" id="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required min="<?php echo date('Y-m-d'); ?>">
+                                             </div>
+                                             <div>
+                                                  <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                                                  <input type="time" name="start_time" id="start_time" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                                             </div>
+                                             <div>
+                                                  <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                                                  <input type="time" name="end_time" id="end_time" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
+                                             </div>
+                                        </div>
+
+                                        <!-- Fee display -->
+                                        <div class="mb-4">
+                                             <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Fee</label>
+                                             <div id="fee-display" class="text-lg font-medium text-blue-600">Rp 0</div>
+                                        </div>
+
+                                        <!-- Notes -->
+                                        <div class="mb-6">
+                                             <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                                             <textarea name="notes" id="notes" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" placeholder="Add any special requirements or notes..."></textarea>
+                                        </div>
+
+                                        <!-- Submit button -->
                                         <div>
-                                             <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                                             <input type="date" name="date" id="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required min="<?php echo date('Y-m-d'); ?>">
+                                             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out">
+                                                  Complete Reservation
+                                             </button>
                                         </div>
-                                        <div>
-                                             <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                                             <input type="time" name="start_time" id="start_time" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                                        </div>
-                                        <div>
-                                             <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                                             <input type="time" name="end_time" id="end_time" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" required>
-                                        </div>
-                                   </div>
-
-                                   <!-- Notes -->
-                                   <div class="mb-6">
-                                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
-                                        <textarea name="notes" id="notes" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50" placeholder="Add any special requirements or notes..."></textarea>
-                                   </div>
-
-                                   <!-- Submit button -->
-                                   <div>
-                                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out">
-                                             Complete Reservation
-                                        </button>
-                                   </div>
-                              </form>
+                                   </form>
+                              <?php endif; ?>
                          </div>
 
                          <!-- Right side - area details or information -->
                          <div class="md:w-1/3 bg-gray-50 p-6 border-l border-gray-200">
                               <?php if ($area): ?>
-                                   <h3 class="text-lg font-bold mb-2"><?php echo $area['nama']; ?></h3>
-                                   <p class="text-gray-600 text-sm mb-4"><?php echo $area['kampus_nama']; ?></p>
+                                   <h3 class="text-lg font-bold mb-2"><?php echo htmlspecialchars($area['nama']); ?></h3>
+                                   <p class="text-gray-600 text-sm mb-4"><?php echo htmlspecialchars($area['kampus_nama']); ?></p>
 
                                    <div class="mb-4">
                                         <div class="text-sm text-gray-700 mb-1">Description:</div>
-                                        <p><?php echo $area['keterangan']; ?></p>
+                                        <p><?php echo htmlspecialchars($area['keterangan']); ?></p>
                                    </div>
 
                                    <div class="mb-4">
@@ -299,7 +365,7 @@ $parking_areas = $conn->query("
                                              <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Reservations can be made up to 7 days in advance</li>
                                              <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Minimum reservation time is 1 hour</li>
                                              <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Cancellations must be made at least 2 hours before reservation time</li>
-                                             <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Payment is calculated based on the reserved duration</li>
+                                             <li><i class="fas fa-check-circle text-green-500 mr-2"></i>Payment is calculated based on the reserved duration and vehicle type</li>
                                         </ul>
                                    </div>
                               <?php endif; ?>
@@ -317,7 +383,7 @@ $parking_areas = $conn->query("
                <div class="max-w-3xl mx-auto space-y-4">
                     <div class="bg-white rounded-lg shadow-md p-4">
                          <h3 class="font-bold mb-2">How much does parking cost?</h3>
-                         <p class="text-gray-600">Parking rates vary by campus location. The standard rate is Rp 5,000 per hour for most areas. Special rates may apply for events or premium parking spaces.</p>
+                         <p class="text-gray-600">Parking rates depend on the vehicle type. For example, cars are typically Rp 5,000 per hour, motorcycles Rp 2,000 per hour, and other vehicles may have different rates.</p>
                     </div>
 
                     <div class="bg-white rounded-lg shadow-md p-4">
@@ -377,28 +443,50 @@ $parking_areas = $conn->query("
                     </div>
                </div>
                <div class="border-t border-gray-700 pt-6 text-center">
-                    <p>&copy; <?php echo date('Y'); ?> CampusPark. All rights reserved.</p>
+                    <p>© <?php echo date('Y'); ?> CampusPark. All rights reserved.</p>
                </div>
           </div>
      </footer>
 
      <script>
-          // Sample JavaScript for calculating fee based on time selection
+          // JavaScript for calculating and displaying fee based on vehicle type and time selection
           document.addEventListener('DOMContentLoaded', function() {
+               const vehicleSelect = document.getElementById('vehicle_id');
                const startTimeInput = document.getElementById('start_time');
                const endTimeInput = document.getElementById('end_time');
+               const feeDisplay = document.getElementById('fee-display');
 
                function calculateFee() {
+                    const vehicleOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+                    const hourlyRate = vehicleOption ? parseFloat(vehicleOption.getAttribute('data-fee')) : 0;
                     const startTime = startTimeInput.value;
                     const endTime = endTimeInput.value;
 
-                    if (startTime && endTime) {
-                         // Add fee calculation logic here if needed
+                    if (hourlyRate && startTime && endTime) {
+                         const start = new Date(`1970-01-01T${startTime}:00`);
+                         const end = new Date(`1970-01-01T${endTime}:00`);
+                         let durationHours = (end - start) / 1000 / 3600;
+                         if (durationHours < 0) {
+                              durationHours += 24; // Handle cases where end time is past midnight
+                         }
+                         const fee = Math.ceil(durationHours) * hourlyRate;
+                         feeDisplay.textContent = `Rp ${fee.toLocaleString('id-ID')}`;
+                    } else {
+                         feeDisplay.textContent = 'Rp 0';
                     }
                }
 
+               vehicleSelect.addEventListener('change', calculateFee);
                startTimeInput.addEventListener('change', calculateFee);
                endTimeInput.addEventListener('change', calculateFee);
+          
+               const mobileMenuButton = document.getElementById('mobile-menu-button');
+               const mobileMenu = document.getElementById('mobile-menu');
+
+               mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+               });
           });
      </script>
 </body>

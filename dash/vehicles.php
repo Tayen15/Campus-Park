@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $thn_beli = intval($_POST['thn_beli'] ?? '');
           $pemilik = trim($_POST['pemilik'] ?? '');
           $jenis_kendaraan_id = (int)($_POST['jenis_kendaraan_id'] ?? 0);
+          $deskripsi = $_POST['deskripsi'] ?? '';
           $id = (int)($_POST['id'] ?? 0);
 
           if ($action === 'create' || $action === 'update') {
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           if (empty($errors)) {
                if ($action === 'create') {
-                    if ($vehicle->create($merk, $pemilik, $nopol, $thn_beli, $jenis_kendaraan_id, $_SESSION['user_id'])) {
+                    if ($vehicle->create($merk, $pemilik, $nopol, $thn_beli, $jenis_kendaraan_id, $_SESSION['user_id'], $deskripsi)) {
                          // Redirect to the same page to avoid resubmission
                          $success = 'Vehicle added successfully.';
                     } else {

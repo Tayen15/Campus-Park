@@ -48,17 +48,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                <div class="flex items-center justify-between py-4">
                     <div class="flex items-center">
                          <i class="fas fa-parking text-3xl mr-3"></i>
-                         <a href="index.php" class="font-bold text-xl">CampusPark</a>
+                         <span class="font-bold text-xl">CampusPark</span>
                     </div>
+                    <!-- Hamburger Menu Button for Mobile -->
+                    <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                         <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                    <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-6">
                          <a href="index.php" class="hover:text-blue-200">Home</a>
                          <a href="find-parking.php" class="hover:text-blue-200">Find Parking</a>
                          <a href="reserve-parking.php" class="hover:text-blue-200">Reserve</a>
                          <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
                          <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
+                         <div>
+                              <?php if ($is_logged_in): ?>
+                                   <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
+                              <?php else: ?>
+                                   <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
+                              <?php endif; ?>
+                         </div>
                     </div>
+               </div>
+               <!-- Mobile Menu -->
+               <div id="mobile-menu" class="md:hidden hidden flex-col space-y-4 pb-4">
+                    <a href="index.php" class="hover:text-blue-200">Home</a>
+                    <a href="find-parking.php" class="hover:text-blue-200">Find Parking</a>
+                    <a href="reserve-parking.php" class=" hovered:text-blue-200">Reserve</a>
+                    <a href="register-vehicle.php" class="hover:text-blue-200">Register Vehicle</a>
+                    <a href="my-vehicles.php" class="hover:text-blue-200">My Vehicles</a>
                     <div>
-                         <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium border-b-2 border-white">Login</a>
+                         <?php if ($is_logged_in): ?>
+                              <a href="logout.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Logout</a>
+                         <?php else: ?>
+                              <a href="login.php" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg font-medium">Login</a>
+                         <?php endif; ?>
                     </div>
                </div>
           </div>
@@ -180,6 +204,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                </div>
           </div>
      </footer>
+     <script>
+          // JavaScript for mobile menu toggle
+          document.addEventListener('DOMContentLoaded', function() {
+               const mobileMenuButton = document.getElementById('mobile-menu-button');
+               const mobileMenu = document.getElementById('mobile-menu');
+
+               mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    mobileMenu.classList.toggle('flex');
+               });
+          });
+     </script>
 </body>
 
 </html>
