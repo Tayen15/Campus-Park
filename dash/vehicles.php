@@ -184,7 +184,7 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                     <div class="bg-white rounded-lg shadow">
                          <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                               <h2 class="text-lg font-semibold">Vehicle List</h2>
-                              <!-- <button onclick="openModal('addVehicleModal')" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 text-sm">Add Vehicle</button> -->
+                              <button onclick="openModal('addVehicleModal')" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 text-sm">Add Vehicle</button>
                          </div>
                          <div class="p-4 overflow-x-auto">
                               <table class="w-full">
@@ -310,6 +310,10 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                          <div class="mb-4">
                               <label class="block text-sm font-medium text-gray-700">Owner</label>
                               <input type="text" name="pemilik" value="<?php echo htmlspecialchars($edit_vehicle['pemilik']); ?>" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                         </div>
+                         <div class="mb-4">
+                              <label class="block text-sm font-medium text-gray-700">Purchase Year</label>
+                              <input type="number" name="thn_beli" value="<?php echo htmlspecialchars($edit_vehicle['thn_beli']); ?>" required class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" min="1900" max="<?php echo date('Y'); ?>">
                          </div>
                          <div class="mb-4">
                               <label class="block text-sm font-medium text-gray-700">Vehicle Type</label>

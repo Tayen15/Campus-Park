@@ -31,7 +31,7 @@ class Vehicle
      // Mendapatkan kendaraan berdasarkan ID
      public function getVehicleById($id)
      {
-          $sql = "SELECT k.id, k.nopol, k.merk, k.pemilik, k.jenis_kendaraan_id, j.nama as jenis_nama
+          $sql = "SELECT k.id, k.nopol, k.merk, k.pemilik, k.thn_beli, k.jenis_kendaraan_id, j.nama as jenis_nama
                 FROM kendaraan k
                 JOIN jenis j ON k.jenis_kendaraan_id = j.id
                 WHERE k.id = ?";
