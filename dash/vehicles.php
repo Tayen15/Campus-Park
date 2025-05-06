@@ -29,26 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $action = $_POST['action'] ?? '';
           $nopol = trim($_POST['nopol'] ?? '');
           $merk = trim($_POST['merk'] ?? '');
-          $tahun_beli = trim($_POST['tahun_beli'] ?? '');
+          $thn_beli = trim($_POST['thn_beli'] ?? '');
           $pemilik = trim($_POST['pemilik'] ?? '');
           $jenis_kendaraan_id = (int)($_POST['jenis_kendaraan_id'] ?? 0);
           $id = (int)($_POST['id'] ?? 0);
 
           if ($action === 'create' || $action === 'update') {
-               if (empty($nopol) || empty($merk) || empty($pemilik) || $jenis_kendaraan_id <= 0 || empty($tahun_beli)) {
+               if (empty($nopol) || empty($merk) || empty($pemilik) || $jenis_kendaraan_id <= 0 || empty($thn_beli)) {
                     $errors[] = 'All fields are required.';
                }
           }
 
           if (empty($errors)) {
                if ($action === 'create') {
-                    if ($vehicle->create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'], date('Y'))) {
+                    if ($vehicle->create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'], $thn_beli)) {
                          $success = 'Vehicle added successfully.';
                     } else {
                          $errors[] = 'Failed to add vehicle.';
                     }
                } elseif ($action === 'update' && $id > 0) {
-                    if ($vehicle->update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'], date('Y'))) {
+                    if ($vehicle->update($id, $nopol, $merk, $pemilik, $jenis_kendaraan_id, $_SESSION['user_id'], $thn_beli)) {
                          $success = 'Vehicle updated successfully.';
                     } else {
                          $errors[] = 'Failed to update vehicle.';
