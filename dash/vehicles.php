@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $action = $_POST['action'] ?? '';
           $nopol = trim($_POST['nopol'] ?? '');
           $merk = trim($_POST['merk'] ?? '');
-          $thn_beli = trim($_POST['thn_beli'] ?? '');
+          $thn_beli = intval($_POST['thn_beli'] ?? '');
           $pemilik = trim($_POST['pemilik'] ?? '');
           $jenis_kendaraan_id = (int)($_POST['jenis_kendaraan_id'] ?? 0);
           $id = (int)($_POST['id'] ?? 0);
@@ -184,7 +184,7 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                     <div class="bg-white rounded-lg shadow">
                          <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                               <h2 class="text-lg font-semibold">Vehicle List</h2>
-                              <button onclick="openModal('addVehicleModal')" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 text-sm">Add Vehicle</button>
+                              <!-- <button onclick="openModal('addVehicleModal')" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 text-sm">Add Vehicle</button> -->
                          </div>
                          <div class="p-4 overflow-x-auto">
                               <table class="w-full">
