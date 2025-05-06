@@ -53,11 +53,12 @@ class Vehicle
      }
 
      // Membuat kendaraan baru
-     public function create($nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id, $thn_beli)
+     public function create($merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_kendaraan_id, $user_id)
      {
-          $sql = "INSERT INTO kendaraan (nopol, merk, pemilik, jenis_kendaraan_id, user_id, thn_beli) VALUES (?, ?, ?, ?, ?, ?)";
+          $sql = "INSERT INTO kendaraan (merk, pemilik, nopol, thn_beli, deskripsi, jenis_kendaraan_id, user_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
           $stmt = $this->conn->prepare($sql);
-          $stmt->bind_param("sssiii", $nopol, $merk, $pemilik, $jenis_kendaraan_id, $user_id, $thn_beli);
+          $stmt->bind_param("sssisii", $merk, $pemilik, $nopol, $thn_beli, $deskripsi, $jenis_kendaraan_id, $user_id);
           $success = $stmt->execute();
           $stmt->close();
           return $success;
