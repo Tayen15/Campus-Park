@@ -316,7 +316,7 @@ $conn->close();
           <div class="container mx-auto px-4 text-center">
                <h2 class="text-3xl font-bold mb-4">Ready to simplify your campus parking?</h2>
                <p class="text-xl mb-8 max-w-2xl mx-auto">Register your vehicle and start enjoying hassle-free parking across all our campus locations.</p>
-               <a href="#" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-8 rounded-lg inline-block">Get Started Today</a>
+               <a href="login.php" class="bg-white text-blue-800 hover:bg-blue-100 font-bold py-3 px-8 rounded-lg inline-block">Get Started Today</a>
           </div>
      </section>
 
@@ -335,10 +335,10 @@ $conn->close();
                          <div>
                               <h3 class="text-white font-semibold mb-4">Quick Links</h3>
                               <ul class="space-y-2">
-                                   <li><a href="#" class="hover:text-white">Home</a></li>
-                                   <li><a href="#" class="hover:text-white">Parking Areas</a></li>
-                                   <li><a href="#" class="hover:text-white">Vehicles</a></li>
-                                   <li><a href="#" class="hover:text-white">Transactions</a></li>
+                                   <li><a href="index.php" class="hover:text-white">Home</a></li>
+                                   <li><a href="find-parking.php" class="hover:text-white">Parking Areas</a></li>
+                                   <li><a href="my-vehicles.php" class="hover:text-white">Vehicles</a></li>
+                                   <li><a href="my-vehicles.php" class="hover:text-white">Transactions</a></li>
                               </ul>
                          </div>
                          <div>
@@ -353,15 +353,15 @@ $conn->close();
                          <div class="col-span-2 md:col-span-1">
                               <h3 class="text-white font-semibold mb-4">Contact</h3>
                               <ul class="space-y-2">
-                                   <li><i class="fas fa-envelope mr-2"></i> info@campuspark.com</li>
-                                   <li><i class="fas fa-phone mr-2"></i> +123 456 7890</li>
-                                   <li><i class="fas fa-map-marker-alt mr-2"></i> University Campus, Building A</li>
+                                   <li><i class="fas fa-envelope mr-2"></i> noreply@oktaa.my.id </li>
+                                   <li><i class="fas fa-phone mr-2"></i> +62 1131 5202</li>
+                                   <li><i class="fas fa-map-marker-alt mr-2"></i> STT Terpadu Nurul Fikri, Building A</li>
                               </ul>
                          </div>
                     </div>
                </div>
                <div class="border-t border-gray-700 pt-6 text-center">
-                    <p>&copy; <?php echo date('Y'); ?> CampusPark. All rights reserved.</p>
+                    <p>&copy; <?php echo date('Y'); ?> <a href="https://github.com/Tayen15/Campus-Park" >CampusPark</a>. All rights reserved.</p>
                </div>
           </div>
      </footer>
