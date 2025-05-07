@@ -23,6 +23,9 @@ This project was a fantastic journey that combined technical skills, problem-sol
 ## 🛠 Built With
 Modern web technologies and a clear purpose: to reduce parking congestion, eliminate manual processes, and support digital transformation within campuses.
 
+## 🔗 Demo Link
+Want to check it out? Explore the demo at: [https://parking.oktaa.my.id/](https://parking.oktaa.my.id/)
+
 We’re incredibly proud of what we’ve built together — and we’d love to hear your thoughts or suggestions! 💬  
 Let’s keep building smart solutions for a better future. 🚗🎓
 
