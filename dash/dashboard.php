@@ -35,9 +35,17 @@ $vehicle_types = $dashboard->getVehicleTypesDistribution();
 </head>
 
 <body class="bg-gray-100">
+     <!-- Mobile Header with Hamburger Menu -->
+     <div class="lg:hidden bg-white shadow-sm p-4 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Dashboard</h1>
+          <button id="menu-toggle" class="text-gray-500 focus:outline-none">
+               <i class="fas fa-bars text-2xl"></i>
+          </button>
+     </div>
+
      <!-- Sidebar -->
      <div class="flex h-screen">
-          <div class="bg-blue-800 text-white w-64 py-6 flex flex-col">
+          <div id="sidebar" class="bg-blue-800 text-white w-64 py-6 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out z-50">
                <div class="px-6 mb-8">
                     <h2 class="text-2xl font-bold">Parking System</h2>
                     <p class="text-sm text-blue-200">Admin Dashboard</p>
@@ -74,8 +82,8 @@ $vehicle_types = $dashboard->getVehicleTypesDistribution();
 
           <!-- Main Content -->
           <div class="flex-1 overflow-y-auto">
-               <!-- Top Bar -->
-               <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+               <!-- Top Bar (Hidden on Mobile) -->
+               <div class="hidden lg:block bg-white shadow-sm p-4 lg:flex justify-between items-center">
                     <h1 class="text-xl font-semibold">Dashboard</h1>
                     <div class="flex items-center space-x-4">
                          <button class="bg-gray-100 p-2 rounded-full">
@@ -263,13 +271,13 @@ $vehicle_types = $dashboard->getVehicleTypesDistribution();
                                    <div class="mt-6">
                                         <h3 class="text-sm font-medium mb-3">Quick Actions</h3>
                                         <div class="grid grid-cols-2 gap-2">
-                                             <a href="#" class="bg-blue-100 text-blue-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-blue-200">
+                                             <a href="vehicles.php" class="bg-blue-100 text-blue-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-blue-200">
                                                   <i class="fas fa-plus-circle mr-1"></i> Add Vehicle
                                              </a>
                                              <a href="#" class="bg-green-100 text-green-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-green-200">
                                                   <i class="fas fa-ticket-alt mr-1"></i> New Entry
                                              </a>
-                                             <a href="#" class="bg-yellow-100 text-yellow-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-yellow-200">
+                                             <a href="../logout.php" class="bg-yellow-100 text-yellow-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-yellow-200">
                                                   <i class="fas fa-sign-out-alt mr-1"></i> Process Exit
                                              </a>
                                              <a href="reports.php" class="bg-purple-100 text-purple-700 py-2 px-3 rounded text-xs font-medium text-center hover:bg-purple-200">
@@ -283,6 +291,23 @@ $vehicle_types = $dashboard->getVehicleTypesDistribution();
                </div>
           </div>
      </div>
+
+     <!-- JavaScript for Sidebar Toggle -->
+     <script>
+          const menuToggle = document.getElementById('menu-toggle');
+          const sidebar = document.getElementById('sidebar');
+
+          menuToggle.addEventListener('click', () => {
+               sidebar.classList.toggle('-translate-x-full');
+          });
+
+          // Close sidebar when clicking outside on mobile
+          document.addEventListener('click', (e) => {
+               if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+               }
+          });
+     </script>
 </body>
 
 </html>

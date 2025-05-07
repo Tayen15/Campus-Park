@@ -113,9 +113,18 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
 </head>
 
 <body class="bg-gray-100">
-     <!-- Sidebar -->
+     <!-- Mobile Header with Hamburger Menu -->
+     <div class="lg:hidden bg-white shadow-sm p-4 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Dashboard</h1>
+          <button id="menu-toggle" class="text-gray-500 focus:outline-none">
+               <i class="fas fa-bars text-2xl"></i>
+          </button>
+     </div>
+
+     <!-- Content -->
      <div class="flex h-screen">
-          <div class="bg-blue-800 text-white w-64 py-6 flex flex-col">
+          <!-- Sidebar -->
+          <div id="sidebar" class="bg-blue-800 text-white w-64 py-6 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out z-50">
                <div class="px-6 mb-8">
                     <h2 class="text-2xl font-bold">Parking System</h2>
                     <p class="text-sm text-blue-200">Admin Dashboard</p>
@@ -339,6 +348,23 @@ if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
                </div>
           </div>
      <?php endif; ?>
+
+     <!-- JavaScript for Sidebar Toggle -->
+     <script>
+          const menuToggle = document.getElementById('menu-toggle');
+          const sidebar = document.getElementById('sidebar');
+
+          menuToggle.addEventListener('click', () => {
+               sidebar.classList.toggle('-translate-x-full');
+          });
+
+          // Close sidebar when clicking outside on mobile
+          document.addEventListener('click', (e) => {
+               if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+               }
+          });
+     </script>
 </body>
 
 </html>
